@@ -25,6 +25,7 @@ export interface Verification {
   address: string
   userCompilationId?: string
   createTime?: Date | undefined
+  visibility?: 'PUBLIC' | 'PROJECT'
 }
 
 export interface SourceSpec {

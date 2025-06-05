@@ -25,7 +25,7 @@ export class SentioPlugin {
     const project = this.env.config.sentio?.project
     const apiKey = this.env.config.sentio?.apiKey || readKey(host)
     if (!apiKey) {
-      console.log("missing api key, please login with sentio CLI first")
+      console.log('missing api key, please login with sentio CLI first')
     }
     console.log('sentio config:', { host, project })
 
@@ -33,8 +33,8 @@ export class SentioPlugin {
   }
 
   public async upload(args: {
-    contractName: string,
-    verify?: { address: string; chainID?: string },
+    contractName: string
+    verify?: { address: string; chainID?: string; isPublic?: boolean }
     constructorArgs?: string
   }) {
     const { contractName, verify, constructorArgs } = args
@@ -82,19 +82,20 @@ export class SentioPlugin {
       }
       req.verifySpec = {
         networkId: chainID,
-        address: verify.address
+        address: verify.address,
+        visibility: verify.isPublic ? 'PUBLIC' : 'PROJECT'
       }
     }
     if (req.verifySpec) {
-      console.log('verify', req.verifySpec)
+      console.log(`verify ${req.verifySpec.address} on chain ${req.verifySpec.networkId} with visibility ${req.verifySpec.visibility}`)
     }
     const res = await this.sentioService.uploadUserCompilation(req)
     console.log('successfully uploaded contract', contractName, res)
     if (req.verifySpec) {
       if (res.verified) {
-        console.log("successfully verified")
+        console.log('successfully verified')
       } else {
-        console.error("failed to verify the contract")
+        console.error('failed to verify the contract')
       }
     }
   }
